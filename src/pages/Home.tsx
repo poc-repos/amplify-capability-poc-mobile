@@ -2,9 +2,12 @@ import MessageListItem from '../components/MessageListItem';
 import { useState } from 'react';
 import { Message, getMessages } from '../data/messages';
 import {
+  IonButton,
   IonContent,
   IonHeader,
+  IonIcon,
   IonList,
+  IonNote,
   IonPage,
   IonRefresher,
   IonRefresherContent,
@@ -13,8 +16,12 @@ import {
   useIonViewWillEnter
 } from '@ionic/react';
 import './Home.css';
+import { useAuthenticator } from '@aws-amplify/ui-react';
+import { logOutOutline } from 'ionicons/icons';
 
 const Home: React.FC = () => {
+
+  const { user, signOut } = useAuthenticator((context) => [context.user]);
 
   const [messages, setMessages] = useState<Message[]>([]);
 
@@ -34,6 +41,10 @@ const Home: React.FC = () => {
       <IonHeader>
         <IonToolbar>
           <IonTitle>Amplify Demo App</IonTitle>
+          <IonNote slot='end'>{user && user.username}</IonNote>
+          <IonButton slot='end' fill="clear" onClick={signOut}>
+            <IonIcon slot="icon-only" icon={logOutOutline}></IonIcon>
+          </IonButton>
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>

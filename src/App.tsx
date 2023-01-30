@@ -23,9 +23,19 @@ import '@ionic/react/css/display.css';
 /* Theme variables */
 import './theme/variables.css';
 
+import { Amplify } from 'aws-amplify';
+
+import { Authenticator } from '@aws-amplify/ui-react';
+import '@aws-amplify/ui-react/styles.css';
+
+import awsExports from './aws-exports';
+
 setupIonicReact();
 
-const App: React.FC = () => (
+Amplify.configure(awsExports);
+
+const App = () => (
+  <Authenticator hideSignUp={true} variation="modal">
   <IonApp>
     <IonReactRouter>
       <IonRouterOutlet>
@@ -41,6 +51,7 @@ const App: React.FC = () => (
       </IonRouterOutlet>
     </IonReactRouter>
   </IonApp>
+  </Authenticator>
 );
 
 export default App;
