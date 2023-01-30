@@ -5,6 +5,8 @@ import {
   IonContent,
   IonHeader,
   IonIcon,
+  IonItem,
+  IonLabel,
   IonList,
   IonNote,
   IonPage,
@@ -24,6 +26,9 @@ import { AccessRequests, WebApplications } from '../models';
 const Home: React.FC = () => {
 
   const { user, signOut } = useAuthenticator((context) => [context.user]);
+  const userGroups = user?.getSignInUserSession()?.getIdToken()?.payload["cognito:groups"];
+  const isApprover = false || (userGroups && userGroups.indexOf("AllApprovers") >= 0)
+
 
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -34,23 +39,23 @@ const Home: React.FC = () => {
     const model = await DataStore.query(AccessRequests);
     const sortedModel = model.sort((a: any, b: any) => +new Date(b.createdAt) - +new Date(a.createdAt))
     console.table(sortedModel)
-    const transformedRequests:any = sortedModel.map(item => {
-        const webapp = webapps && webapps.filter(w => w.id === item.accessRequestsWebApplicationsRelationId);
-        return {
-            id: item.id,
-            username: item.username,
-            reason: item.accessreason,
-            status: item.status,
-            appid: item.accessRequestsWebApplicationsRelationId,
-            appname: webapp && webapp[0].name,
-            requestdate: item.requestdate,
-            approverusername: item.approverusername,
-            approverreason: item.approverreason
-        }
+    const transformedRequests: any = sortedModel.map(item => {
+      const webapp = webapps && webapps.filter(w => w.id === item.accessRequestsWebApplicationsRelationId);
+      return {
+        id: item.id,
+        username: item.username,
+        reason: item.accessreason,
+        status: item.status,
+        appid: item.accessRequestsWebApplicationsRelationId,
+        appname: webapp && webapp[0].name,
+        requestdate: item.requestdate,
+        approverusername: item.approverusername,
+        approverreason: item.approverreason
+      }
     });
     setRequests(transformedRequests);
     setLoading(false);
-}
+  }
 
   useIonViewWillEnter(() => {
     getDataFromAWS();
@@ -88,8 +93,14 @@ const Home: React.FC = () => {
         </IonHeader>
 
         <IonList>
-          {requests && requests.map((r:any) => <RequestListItem key={r.id} item={r} />)}
+          {isApprover && requests && requests.map((r: any) => <RequestListItem key={r.id} item={r} />)}
         </IonList>
+
+        {!isApprover &&
+          <IonItem color="danger" className='ion-padding' lines={'none'}>
+            <IonLabel>App ONLY Available for users with "Approver" role</IonLabel>
+          </IonItem>
+        }
       </IonContent>
     </IonPage>
   );
