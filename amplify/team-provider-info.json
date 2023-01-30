@@ -10,6 +10,11 @@
       "StackName": "amplify-amplifycapabilitypoc-staging-141039",
       "StackId": "arn:aws:cloudformation:us-east-1:895057803729:stack/amplify-amplifycapabilitypoc-staging-141039/e30fffc0-9739-11ed-8a5e-0a0c1f877d3d",
       "AmplifyAppId": "d9nm1xcksrprr"
+    },
+    "categories": {
+      "auth": {
+        "AmplifyCapabilityPoC": {}
+      }
     }
   }
 }

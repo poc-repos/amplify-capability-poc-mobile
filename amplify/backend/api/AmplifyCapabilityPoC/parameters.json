@@ -1,5 +1,6 @@
 {
   "AppSyncApiName": "AmplifyCapabilityPoC",
   "DynamoDBBillingMode": "PAY_PER_REQUEST",
-  "DynamoDBEnableServerSideEncryption": false
+  "DynamoDBEnableServerSideEncryption": false,
+  "AuthModeLastUpdated": "2023-01-24T13:28:56.503Z"
 }

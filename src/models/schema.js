@@ -145,13 +145,6 @@ export const schema = {
                     "isRequired": false,
                     "attributes": []
                 },
-                "approvergroup": {
-                    "name": "approvergroup",
-                    "isArray": false,
-                    "type": "String",
-                    "isRequired": false,
-                    "attributes": []
-                },
                 "createdAt": {
                     "name": "createdAt",
                     "isArray": false,
@@ -277,6 +270,13 @@ export const schema = {
                     "isRequired": false,
                     "attributes": []
                 },
+                "title": {
+                    "name": "title",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                },
                 "body": {
                     "name": "body",
                     "isArray": false,
@@ -338,5 +338,5 @@ export const schema = {
     },
     "nonModels": {},
     "codegenVersion": "3.3.2",
-    "version": "e46dc8c87f203f4b832243b38107b4b0"
+    "version": "0ffb3ccd07eb458865fab2b974fc751e"
 };
