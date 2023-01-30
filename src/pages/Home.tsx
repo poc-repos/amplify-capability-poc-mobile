@@ -1,6 +1,5 @@
-import MessageListItem from '../components/MessageListItem';
+import RequestListItem from '../components/RequestListItem';
 import { useState } from 'react';
-import { Message, getMessages } from '../data/messages';
 import {
   IonButton,
   IonContent,
@@ -9,6 +8,7 @@ import {
   IonList,
   IonNote,
   IonPage,
+  IonProgressBar,
   IonRefresher,
   IonRefresherContent,
   IonTitle,
@@ -18,16 +18,42 @@ import {
 import './Home.css';
 import { useAuthenticator } from '@aws-amplify/ui-react';
 import { logOutOutline } from 'ionicons/icons';
+import { DataStore } from 'aws-amplify';
+import { AccessRequests, WebApplications } from '../models';
 
 const Home: React.FC = () => {
 
   const { user, signOut } = useAuthenticator((context) => [context.user]);
 
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [requests, setRequests] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  const getDataFromAWS = async () => {
+    setLoading(true);
+    const webapps = await DataStore.query(WebApplications);
+    const model = await DataStore.query(AccessRequests);
+    const sortedModel = model.sort((a: any, b: any) => +new Date(b.createdAt) - +new Date(a.createdAt))
+    console.table(sortedModel)
+    const transformedRequests:any = sortedModel.map(item => {
+        const webapp = webapps && webapps.filter(w => w.id === item.accessRequestsWebApplicationsRelationId);
+        return {
+            id: item.id,
+            username: item.username,
+            reason: item.accessreason,
+            status: item.status,
+            appid: item.accessRequestsWebApplicationsRelationId,
+            appname: webapp && webapp[0].name,
+            requestdate: item.requestdate,
+            approverusername: item.approverusername,
+            approverreason: item.approverreason
+        }
+    });
+    setRequests(transformedRequests);
+    setLoading(false);
+}
 
   useIonViewWillEnter(() => {
-    const msgs = getMessages();
-    setMessages(msgs);
+    getDataFromAWS();
   });
 
   const refresh = (e: CustomEvent) => {
@@ -41,6 +67,7 @@ const Home: React.FC = () => {
       <IonHeader>
         <IonToolbar>
           <IonTitle>Amplify Demo App</IonTitle>
+          {loading && <IonProgressBar type="indeterminate"></IonProgressBar>}
           <IonNote slot='end'>{user && user.username}</IonNote>
           <IonButton slot='end' fill="clear" onClick={signOut}>
             <IonIcon slot="icon-only" icon={logOutOutline}></IonIcon>
@@ -61,7 +88,7 @@ const Home: React.FC = () => {
         </IonHeader>
 
         <IonList>
-          {messages.map(m => <MessageListItem key={m.id} message={m} />)}
+          {requests && requests.map((r:any) => <RequestListItem key={r.id} item={r} />)}
         </IonList>
       </IonContent>
     </IonPage>

@@ -53,6 +53,18 @@ ion-item ion-note.md {
   background: var(--ion-color-primary);
 }
 
+.dot-pending {
+  background: var(--ion-color-warning);
+}
+
+.dot-approved {
+  background: var(--ion-color-success);
+}
+
+.dot-rejected {
+  background: var(--ion-color-danger);
+}
+
 ion-footer ion-title {
   font-size: 11px;
   font-weight: normal;
