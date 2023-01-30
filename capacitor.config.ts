@@ -1,7 +1,7 @@
 import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'io.ionic.starter',
+  appId: 'amplify.capability.poc.mobile',
   appName: 'amplify-capability-poc-mobile',
   webDir: 'build',
   bundledWebRuntime: false

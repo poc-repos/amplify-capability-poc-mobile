@@ -63,6 +63,7 @@ const Home: React.FC = () => {
 
   const refresh = (e: CustomEvent) => {
     setTimeout(() => {
+      getDataFromAWS();
       e.detail.complete();
     }, 3000);
   };

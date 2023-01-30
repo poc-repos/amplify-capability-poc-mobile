@@ -19,7 +19,7 @@ import {
 } from '@ionic/react';
 import { DataStore } from 'aws-amplify';
 import { checkmarkOutline, closeOutline, eyeOutline, saveOutline } from 'ionicons/icons';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { AccessRequests } from '../models';
 import './RequestListItem.css';
 
@@ -32,6 +32,8 @@ const RequestListItem: any = ({ item }: any) => {
   const [reason, setReason] = useState<any>("");
   const [action, setAction] = useState<any>("");
   const [loading, setLoading] = useState(false);
+
+  const ionItemRef: any = useRef();
 
   let statusClass = "dot-pending";
   if (item.status) {
@@ -62,17 +64,17 @@ const RequestListItem: any = ({ item }: any) => {
   }
 
   return (
-    <IonItemSliding>
+    <IonItemSliding ref={ionItemRef}>
       {!item.status &&
         <>
           <IonItemOptions side="start">
-            <IonItemOption color="danger" onClick={() => { setAction("REJECTED"); setIsActionOpen(true) }}>
+            <IonItemOption color="danger" onClick={() => { ionItemRef && ionItemRef.current.closeOpened(); setAction("REJECTED"); setIsActionOpen(true) }}>
               <IonIcon slot="start" icon={closeOutline}></IonIcon>
               Reject
             </IonItemOption>
           </IonItemOptions>
           <IonItemOptions side="end">
-            <IonItemOption color="success" onClick={() => { setAction("APPROVED"); setIsActionOpen(true) }}>
+            <IonItemOption color="success" onClick={() => { ionItemRef && ionItemRef.current.closeOpened(); setAction("APPROVED"); setIsActionOpen(true) }}>
               <IonIcon slot="start" icon={checkmarkOutline}></IonIcon>
               Approve
             </IonItemOption>
@@ -82,7 +84,7 @@ const RequestListItem: any = ({ item }: any) => {
 
       {item.status &&
         <IonItemOptions side="end">
-          <IonItemOption onClick={()=> setIsDetailOpen(true)}>
+          <IonItemOption onClick={() => { ionItemRef && ionItemRef.current.closeOpened(); setIsDetailOpen(true) }}>
             <IonIcon slot="start" icon={eyeOutline}></IonIcon>
             View Details
           </IonItemOption>
@@ -140,7 +142,7 @@ const RequestListItem: any = ({ item }: any) => {
           </IonToolbar>
         </IonHeader>
         <IonContent className="ion-padding">
-        <IonItem>
+          <IonItem>
             <IonNote slot="start">App Name</IonNote>
             <IonLabel>{item.appname}</IonLabel>
           </IonItem>
