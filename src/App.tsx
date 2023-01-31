@@ -30,28 +30,40 @@ import '@aws-amplify/ui-react/styles.css';
 
 import awsExports from './aws-exports';
 
+import { AmazonAIPredictionsProvider } from '@aws-amplify/predictions';
+import { useEffect } from 'react';
+
 setupIonicReact();
 
 Amplify.configure(awsExports);
 
-const App = () => (
-  <Authenticator hideSignUp={true} variation="modal">
-    <IonApp>
-      <IonReactRouter>
-        <IonRouterOutlet>
-          <Route path="/" exact={true}>
-            <Redirect to="/home" />
-          </Route>
-          <Route path="/home" exact={true}>
-            <Home />
-          </Route>
-          <Route path="/message/:id">
-            <ViewMessage />
-          </Route>
-        </IonRouterOutlet>
-      </IonReactRouter>
-    </IonApp>
-  </Authenticator>
-);
+const App = () => {
+  useEffect(() => {
+    try {
+      Amplify.addPluggable(new AmazonAIPredictionsProvider())
+    } catch (error) {
+      console.log('Already added pluggable')
+    }
+  }, []);
+  return (
+    <Authenticator hideSignUp={true} variation="modal">
+      <IonApp>
+        <IonReactRouter>
+          <IonRouterOutlet>
+            <Route path="/" exact={true}>
+              <Redirect to="/home" />
+            </Route>
+            <Route path="/home" exact={true}>
+              <Home />
+            </Route>
+            <Route path="/message/:id">
+              <ViewMessage />
+            </Route>
+          </IonRouterOutlet>
+        </IonReactRouter>
+      </IonApp>
+    </Authenticator>
+  )
+};
 
 export default App;

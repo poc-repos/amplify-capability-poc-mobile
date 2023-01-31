@@ -14,6 +14,12 @@
     "categories": {
       "auth": {
         "AmplifyCapabilityPoC": {}
+      },
+      "hosting": {
+        "amplifyhosting": {
+          "appId": "d9nm1xcksrprr",
+          "type": "cicd"
+        }
       }
     }
   }

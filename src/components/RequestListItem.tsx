@@ -2,6 +2,7 @@ import { useAuthenticator } from '@aws-amplify/ui-react';
 import {
   IonButton,
   IonButtons,
+  IonCard,
   IonContent,
   IonHeader,
   IonIcon,
@@ -17,9 +18,9 @@ import {
   IonTitle,
   IonToolbar
 } from '@ionic/react';
-import { DataStore } from 'aws-amplify';
+import { DataStore, Predictions } from 'aws-amplify';
 import { checkmarkOutline, closeOutline, eyeOutline, saveOutline } from 'ionicons/icons';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { AccessRequests } from '../models';
 import './RequestListItem.css';
 
@@ -32,6 +33,9 @@ const RequestListItem: any = ({ item }: any) => {
   const [reason, setReason] = useState<any>("");
   const [action, setAction] = useState<any>("");
   const [loading, setLoading] = useState(false);
+  const [sentiment, setSentiment] = useState("");
+  const [sentimentVariation, setSentimentVariation] = useState("");
+  const [sentimentPercent, setSentimentPercent] = useState();
 
   const ionItemRef: any = useRef();
 
@@ -62,6 +66,32 @@ const RequestListItem: any = ({ item }: any) => {
     setLoading(false);
     setIsActionOpen(false);
   }
+
+  const getSentimentPrediction = async (textToInterpret: any) => {
+    const txt: any = {
+      text: {
+        source: {
+          text: textToInterpret,
+        },
+        type: 'ALL'
+      }
+    }
+
+    const sentiment = await Predictions.interpret(txt);
+    return sentiment.textInterpretation.sentiment;
+  }
+
+  const captureSentiment = async (text: any) => {
+    const result = text && await getSentimentPrediction(text);
+    setSentiment(result.predominant);
+    if (result.predominant === "NEUTRAL") { setSentimentPercent(result.neutral); setSentimentVariation("secondary"); }
+    if (result.predominant === "POSITIVE") { setSentimentPercent(result.positive); setSentimentVariation("success"); }
+    if (result.predominant === "NEGATIVE") { setSentimentPercent(result.negative); setSentimentVariation("danger"); }
+  }
+
+  useEffect(() => {
+    captureSentiment(item.reason)
+  }, []);
 
   return (
     <IonItemSliding ref={ionItemRef}>
@@ -101,9 +131,14 @@ const RequestListItem: any = ({ item }: any) => {
             </span>
           </h2>
           <h3>{item.username}</h3>
-          <p>
+          <p className="ion-text-wrap">
             {item.reason}
           </p>
+          {sentiment &&
+            <IonNote color={sentimentVariation}>
+              AI-Based Sentiment Analysis of Reason is <strong>{sentiment}</strong> with accuracy of <strong>{sentimentPercent && Math.round(sentimentPercent * 10000) / 100}</strong> %
+            </IonNote>
+          }
         </IonLabel>
       </IonItem>
 
@@ -158,9 +193,13 @@ const RequestListItem: any = ({ item }: any) => {
             <IonNote slot="start">Request Reason</IonNote>
             <IonLabel>{item.reason}</IonLabel>
           </IonItem>
+          <IonItem>
+            <IonNote slot="start">Status</IonNote>
+            <IonLabel>{item.status}</IonLabel>
+          </IonItem>
 
           <IonItem>
-            <IonNote slot="start">Approved By</IonNote>
+            <IonNote slot="start">Acted By</IonNote>
             <IonLabel>{item.approverusername}</IonLabel>
           </IonItem>
           <IonItem>

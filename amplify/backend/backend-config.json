@@ -79,5 +79,12 @@
         }
       ]
     }
+  },
+  "predictions": {
+    "amplifypocinterprettext": {
+      "interpretType": "interpretText",
+      "providerPlugin": "awscloudformation",
+      "service": "Comprehend"
+    }
   }
 }
