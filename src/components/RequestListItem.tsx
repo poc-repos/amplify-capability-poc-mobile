@@ -16,6 +16,7 @@ import {
   IonSpinner,
   IonTextarea,
   IonTitle,
+  IonToggle,
   IonToolbar
 } from '@ionic/react';
 import { DataStore, Predictions } from 'aws-amplify';
@@ -36,6 +37,9 @@ const RequestListItem: any = ({ item }: any) => {
   const [sentiment, setSentiment] = useState("");
   const [sentimentVariation, setSentimentVariation] = useState("");
   const [sentimentPercent, setSentimentPercent] = useState();
+  const [isChecked, setIsChecked] = useState(false);
+  const [isNonEnglish, setIsNonEnglish] = useState(false);
+  const [translatedText, setTranslatedText] = useState("");
 
   const ionItemRef: any = useRef();
 
@@ -89,8 +93,31 @@ const RequestListItem: any = ({ item }: any) => {
     if (result.predominant === "NEGATIVE") { setSentimentPercent(result.negative); setSentimentVariation("danger"); }
   }
 
+  const textTranslation = async (textToTranslate: any) => {
+    const result = await Predictions.convert({
+      translateText: {
+        source: {
+          text: textToTranslate,
+          language: "auto" // defaults configured on aws-exports.js
+          // supported languages https://docs.aws.amazon.com/translate/latest/dg/how-it-works.html#how-it-works-language-codes
+        },
+        targetLanguage: "en"
+      }
+    });
+    return result;
+  }
+
+  const checkTranslationRequirement = async (text: any) => {
+    const result = text && await textTranslation(text);
+    if (result) {
+      setIsNonEnglish(text !== result.text);
+      setTranslatedText(result.text);
+    }
+  }
+
   useEffect(() => {
     captureSentiment(item.reason)
+    checkTranslationRequirement(item.reason);
   }, []);
 
   return (
@@ -132,16 +159,22 @@ const RequestListItem: any = ({ item }: any) => {
           </h2>
           <h3>{item.username}</h3>
           <p className="ion-text-wrap">
-            {item.reason}
+            {isChecked ? translatedText : item.reason}
           </p>
           {sentiment &&
             <IonNote color={sentimentVariation}>
               AI-Based Sentiment Analysis of Reason is <strong>{sentiment}</strong> with accuracy of <strong>{sentimentPercent && Math.round(sentimentPercent * 10000) / 100}</strong> %
             </IonNote>
           }
+          {isNonEnglish &&
+            <IonItem lines='none'>
+              <IonToggle checked={isChecked} onIonChange={(e: any) => { setIsChecked(e.target.checked); }}></IonToggle>
+              <IonLabel color="medium">{isChecked ? "See Original Text" : "See Translated Text"}</IonLabel>
+            </IonItem>
+
+          }
         </IonLabel>
       </IonItem>
-
       {/*  Action Modal */}
       <IonModal isOpen={isActionOpen}>
         <IonHeader>

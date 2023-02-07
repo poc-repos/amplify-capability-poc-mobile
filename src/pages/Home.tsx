@@ -37,7 +37,7 @@ const Home: React.FC = () => {
     setLoading(true);
     const webapps = await DataStore.query(WebApplications);
     const model = await DataStore.query(AccessRequests);
-    const sortedModel = model.sort((a: any, b: any) => +new Date(b.createdAt) - +new Date(a.createdAt))
+    const sortedModel = model.sort((a: any, b: any) => +new Date(b.requestdate) - +new Date(a.requestdate))
     console.table(sortedModel)
     const transformedRequests: any = sortedModel.map(item => {
       const webapp = webapps && webapps.filter(w => w.id === item.accessRequestsWebApplicationsRelationId);
@@ -47,7 +47,7 @@ const Home: React.FC = () => {
         reason: item.accessreason,
         status: item.status,
         appid: item.accessRequestsWebApplicationsRelationId,
-        appname: webapp && webapp[0].name,
+        appname: webapp && webapp[0] && webapp[0].name,
         requestdate: item.requestdate,
         approverusername: item.approverusername,
         approverreason: item.approverreason

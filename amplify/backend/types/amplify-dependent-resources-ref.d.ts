@@ -28,6 +28,11 @@ export type AmplifyDependentResourcesAttributes = {
         "amplifypocinterprettext": {
             "region": "string",
             "type": "string"
+        },
+        "translateTextbca80352": {
+            "region": "string",
+            "sourceLang": "string",
+            "targetLang": "string"
         }
     }
 }

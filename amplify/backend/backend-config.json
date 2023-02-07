@@ -85,6 +85,11 @@
       "interpretType": "interpretText",
       "providerPlugin": "awscloudformation",
       "service": "Comprehend"
+    },
+    "translateTextbca80352": {
+      "convertType": "translateText",
+      "providerPlugin": "awscloudformation",
+      "service": "Translate"
     }
   }
 }
